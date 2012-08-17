@@ -14,6 +14,9 @@ glIFontRenderer::flush() で描画します。
 Selene / Cattleya の配布元はこちら。感謝。
 http://www.moon.sakuraweb.com/
 
+使用例で使っているフォントは VL Gothic をテクスチャ化したものです。ライセンスも緩く、プログラミング向けの字形のいいフォントです。
+http://vlgothic.dicey.org/
+
 
 author: i-saint
 https://github.com/i-saint
