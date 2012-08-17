@@ -79,6 +79,11 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy glSpriteFont.h ..\
+copy glSpriteFont.lib ..\
+copy glSpriteFont.dll ..\</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BinaryStream.h" />
