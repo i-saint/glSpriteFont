@@ -6,6 +6,48 @@
 
 namespace ist {
 
+enum I3D_COLOR_FORMAT
+{
+    I3D_COLOR_UNKNOWN,
+
+    //     CPU  ->    GPU
+    I3D_R8,     //    0-255 ->  0.0f-1.0f
+    I3D_R8S,    // -128-127 -> -1.0f-1.0f
+    I3D_R8U,    //    0-255 ->     0-255
+    I3D_R8I,    // -128-127 ->  -128-127
+    I3D_R16F,
+    I3D_R32F,
+    I3D_RG8,
+    I3D_RG8S,
+    I3D_RG8U,
+    I3D_RG8I,
+    I3D_RG16F,
+    I3D_RG32F,
+    I3D_RGB8,
+    I3D_RGB8S,
+    I3D_RGB8U,
+    I3D_RGB8I,
+    I3D_RGB16F,
+    I3D_RGB32F,
+    I3D_RGBA8,
+    I3D_RGBA8S,
+    I3D_RGBA8U,
+    I3D_RGBA8I,
+    I3D_RGBA16F,
+    I3D_RGBA32F,
+    I3D_DEPTH16F,
+    I3D_DEPTH32F,
+    I3D_DEPTH24_STENCIL8,
+    I3D_DEPTH32F_STENCIL8,
+    I3D_RGB_DXT1,
+    I3D_SRGB_DXT1,
+    I3D_RGBA_DXT1,
+    I3D_SRGBA_DXT1,
+    I3D_RGBA_DXT3,
+    I3D_SRGBA_DXT3,
+    I3D_RGBA_DXT5,
+    I3D_SRGBA_DXT5,
+};
 struct VertexDesc
 {
     GLuint location;        // shader value location
@@ -50,16 +92,18 @@ struct SamplerDesc
 
 struct Texture2DDesc
 {
-    GLuint format;
+    I3D_COLOR_FORMAT format;
     uvec2 size;
     uint32 mipmap;
     void *data;
+    uint32 datasize;
 
-    explicit Texture2DDesc(GLuint _format=GL_RGBA8, uvec2 _size=uvec2(0, 0), uint32 _mipmap=0, void *_data=NULL)
+    explicit Texture2DDesc(I3D_COLOR_FORMAT _format=I3D_RGBA8, uvec2 _size=uvec2(0, 0), uint32 _mipmap=0, void *_data=NULL, uint32 _datasize=0)
         : format(_format)
         , size(_size)
         , mipmap(_mipmap)
         , data(_data)
+        , datasize(_datasize)
     {}
 };
 
@@ -91,22 +135,47 @@ bool DetectGLFormat(GLint fmt, GLint &internal_format, GLint &format, GLint &typ
 {
     switch(fmt)
     {
-    case GL_R8:                 internal_format=GL_R8;      format=GL_RED;  type=GL_UNSIGNED_BYTE;  break;
-    case GL_R16F:               internal_format=GL_R16F;    format=GL_RED;  type=GL_FLOAT;          break;
-    case GL_R32F:               internal_format=GL_R32F;    format=GL_RED;  type=GL_FLOAT;          break;
-    case GL_RG8:                internal_format=GL_RG8;     format=GL_RG;   type=GL_UNSIGNED_BYTE;  break;
-    case GL_RG16F:              internal_format=GL_RG16F;   format=GL_RG;   type=GL_FLOAT;          break;
-    case GL_RG32F:              internal_format=GL_RG32F;   format=GL_RG;   type=GL_FLOAT;          break;
-    case GL_RGB8:               internal_format=GL_RGB8;    format=GL_RGB;  type=GL_UNSIGNED_BYTE;  break;
-    case GL_RGB16F:             internal_format=GL_RGB16F;  format=GL_RGB;  type=GL_FLOAT;          break;
-    case GL_RGB32F:             internal_format=GL_RGB32F;  format=GL_RGB;  type=GL_FLOAT;          break;
-    case GL_RGBA8:              internal_format=GL_RGBA8;   format=GL_RGBA; type=GL_UNSIGNED_BYTE;  break;
-    case GL_RGBA16F:            internal_format=GL_RGBA16F; format=GL_RGBA; type=GL_FLOAT;          break;
-    case GL_RGBA32F:            internal_format=GL_RGBA32F; format=GL_RGBA; type=GL_FLOAT;          break;
-    case GL_DEPTH_COMPONENT16:  internal_format=GL_DEPTH_COMPONENT16; format=GL_DEPTH_COMPONENT; type=GL_FLOAT; break;
-    case GL_DEPTH_COMPONENT:    internal_format=GL_DEPTH_COMPONENT; format=GL_DEPTH_COMPONENT; type=GL_FLOAT; break;
-    case GL_DEPTH24_STENCIL8:   internal_format=GL_DEPTH24_STENCIL8;  format=GL_DEPTH_STENCIL; type=GL_UNSIGNED_INT_24_8; break;
-    case GL_DEPTH32F_STENCIL8:  internal_format=GL_DEPTH32F_STENCIL8; format=GL_DEPTH_STENCIL; type=GL_FLOAT_32_UNSIGNED_INT_24_8_REV; break;
+    case I3D_R8:        internal_format=GL_R8;          format=GL_RED;  type=GL_UNSIGNED_BYTE;  break;
+    case I3D_R8S:       internal_format=GL_R8_SNORM;    format=GL_RED;  type=GL_BYTE;           break;
+    case I3D_R8U:       internal_format=GL_R8UI;        format=GL_RED;  type=GL_UNSIGNED_BYTE;  break;
+    case I3D_R8I:       internal_format=GL_R8I;         format=GL_RED;  type=GL_BYTE;           break;
+    case I3D_R16F:      internal_format=GL_R16F;        format=GL_RED;  type=GL_FLOAT;          break;
+    case I3D_R32F:      internal_format=GL_R32F;        format=GL_RED;  type=GL_FLOAT;          break;
+
+    case I3D_RG8:       internal_format=GL_RG8;         format=GL_RG;   type=GL_UNSIGNED_BYTE;  break;
+    case I3D_RG8S:      internal_format=GL_RG8_SNORM;   format=GL_RG;   type=GL_BYTE;           break;
+    case I3D_RG8U:      internal_format=GL_RG8UI;       format=GL_RG;   type=GL_UNSIGNED_BYTE;  break;
+    case I3D_RG8I:      internal_format=GL_RG8I;        format=GL_RG;   type=GL_BYTE;           break;
+    case I3D_RG16F:     internal_format=GL_RG16F;       format=GL_RG;   type=GL_FLOAT;          break;
+    case I3D_RG32F:     internal_format=GL_RG32F;       format=GL_RG;   type=GL_FLOAT;          break;
+
+    case I3D_RGB8:      internal_format=GL_RGB8;        format=GL_RGB;  type=GL_UNSIGNED_BYTE;  break;
+    case I3D_RGB8S:     internal_format=GL_RGB8_SNORM;  format=GL_RGB;  type=GL_BYTE;           break;
+    case I3D_RGB8U:     internal_format=GL_RGB8UI;      format=GL_RGB;  type=GL_UNSIGNED_BYTE;  break;
+    case I3D_RGB8I:     internal_format=GL_RGB8I;       format=GL_RGB;  type=GL_BYTE;           break;
+    case I3D_RGB16F:    internal_format=GL_RGB16F;      format=GL_RGB;  type=GL_FLOAT;          break;
+    case I3D_RGB32F:    internal_format=GL_RGB32F;      format=GL_RGB;  type=GL_FLOAT;          break;
+
+    case I3D_RGBA8:     internal_format=GL_RGBA8;       format=GL_RGBA; type=GL_UNSIGNED_BYTE;  break;
+    case I3D_RGBA8S:    internal_format=GL_RGBA8_SNORM; format=GL_RGBA; type=GL_BYTE;           break;
+    case I3D_RGBA8U:    internal_format=GL_RGBA8UI;     format=GL_RGBA; type=GL_UNSIGNED_BYTE;  break;
+    case I3D_RGBA8I:    internal_format=GL_RGBA8I;      format=GL_RGBA; type=GL_BYTE;           break;
+    case I3D_RGBA16F:   internal_format=GL_RGBA16F;     format=GL_RGBA; type=GL_FLOAT;          break;
+    case I3D_RGBA32F:   internal_format=GL_RGBA32F;     format=GL_RGBA; type=GL_FLOAT;          break;
+
+    case I3D_DEPTH16F:          internal_format=GL_DEPTH_COMPONENT16;   format=GL_DEPTH_COMPONENT;  type=GL_FLOAT;                          break;
+    case I3D_DEPTH32F:          internal_format=GL_DEPTH_COMPONENT;     format=GL_DEPTH_COMPONENT;  type=GL_FLOAT;                          break;
+    case I3D_DEPTH24_STENCIL8:  internal_format=GL_DEPTH24_STENCIL8;    format=GL_DEPTH_STENCIL;    type=GL_UNSIGNED_INT_24_8;              break;
+    case I3D_DEPTH32F_STENCIL8: internal_format=GL_DEPTH32F_STENCIL8;   format=GL_DEPTH_STENCIL;    type=GL_FLOAT_32_UNSIGNED_INT_24_8_REV; break;
+
+    case I3D_RGB_DXT1:  internal_format=GL_COMPRESSED_RGB_S3TC_DXT1_EXT;        break;
+    case I3D_SRGB_DXT1: internal_format=GL_COMPRESSED_SRGB_S3TC_DXT1_EXT;       break;
+    case I3D_RGBA_DXT1: internal_format=GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;       break;
+    case I3D_SRGBA_DXT1:internal_format=GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT; break;
+    case I3D_RGBA_DXT3: internal_format=GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;       break;
+    case I3D_SRGBA_DXT3:internal_format=GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT; break;
+    case I3D_RGBA_DXT5: internal_format=GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;       break;
+    case I3D_SRGBA_DXT5:internal_format=GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT; break;
     default:
         istAssert(false, "unknown format: %d", fmt);
         return false;
@@ -215,7 +284,7 @@ public:
             const VertexDesc& desc = descs[i];
             glEnableVertexAttribArray(desc.location);
             // float type
-            if(desc.type==GL_HALF_FLOAT || desc.type==GL_FLOAT || desc.type==GL_DOUBLE) {
+            if(desc.type==GL_HALF_FLOAT || desc.type==GL_FLOAT || desc.type==GL_DOUBLE || desc.normalize) {
                 glVertexAttribPointer(desc.location, desc.num_elements, desc.type, desc.normalize, stride, (GLvoid*)desc.offset);
             }
             // integer type
@@ -477,7 +546,7 @@ Texture2D* CreateTexture2DFromFile(const char *filename)
         istPrint("file load failed: %s\n", filename);
         return false;
     }
-    Texture2DDesc desc(GL_RGBA8, uvec2(img.width(), img.height()), 0, img.data());
+    Texture2DDesc desc(I3D_RGBA8, uvec2(img.width(), img.height()), 0, img.data());
     return new Texture2D(desc);
 }
 Texture2D* CreateTexture2DFromStream(IBinaryStream &st)
@@ -487,10 +556,34 @@ Texture2D* CreateTexture2DFromStream(IBinaryStream &st)
         istPrint("file load failed\n");
         return false;
     }
-    Texture2DDesc desc(GL_RGBA8, uvec2(img.width(), img.height()), 0, img.data());
+    Texture2DDesc desc(I3D_RGBA8, uvec2(img.width(), img.height()), 0, img.data());
     return new Texture2D(desc);
 }
 
+Texture2D* CreateTexture2DFromImage(Image &img, I3D_COLOR_FORMAT format=I3D_COLOR_UNKNOWN)
+{
+    if(format==I3D_COLOR_UNKNOWN) {
+        switch(img.getFormat()) {
+        case IF_R8U:        format=I3D_R8; break;
+        case IF_R8I:        format=I3D_R8S; break;
+        case IF_R32F:       format=I3D_R32F; break;
+        case IF_RG8U:       format=I3D_RG8; break;
+        case IF_RG8I:       format=I3D_RG8S; break;
+        case IF_RG32F:      format=I3D_RG32F; break;
+        case IF_RGB8U:      format=I3D_RGB8; break;
+        case IF_RGB8I:      format=I3D_RGB8S; break;
+        case IF_RGB32F:     format=I3D_RGB32F; break;
+        case IF_RGBA8U:     format=I3D_RGBA8; break;
+        case IF_RGBA8I:     format=I3D_RGBA8S; break;
+        case IF_RGBA32F:    format=I3D_RGBA32F; break;
+        case IF_RGBA_DXT1:  format=I3D_RGBA_DXT1; break;
+        case IF_RGBA_DXT3:  format=I3D_RGBA_DXT3; break;
+        case IF_RGBA_DXT5:  format=I3D_RGBA_DXT5; break;
+        }
+    }
+    Texture2DDesc desc(format, uvec2(img.width(), img.height()), 0, img.data(), img.size());
+    return new Texture2D(desc);
+}
 
 
 
@@ -530,6 +623,7 @@ struct FontQuad
     vec2 size;
     vec2 uv_pos;
     vec2 uv_size;
+    vec4 color;
 };
 
 class FSS
@@ -538,6 +632,7 @@ public:
     FSS()
         : m_header(NULL)
         , m_data(NULL)
+        , m_color(1.0f, 1.0f, 1.0f, 1.0f)
         , m_size(0.0f)
         , m_spacing(1.0f)
         , m_monospace(false)
@@ -549,9 +644,10 @@ public:
         m_rcp_tex_size = vec2(1.0f, 1.0f) / m_tex_size;
     }
 
-    void setSize(float32 v) { m_size=v; }
-    void setSpace(float32 v) { m_spacing=v; }
-    void setMonospace(bool v) { m_monospace=v; }
+    void setColor(const vec4 &v){ m_color=v; }
+    void setSize(float32 v)     { m_size=v; }
+    void setSpace(float32 v)    { m_spacing=v; }
+    void setMonospace(bool v)   { m_monospace=v; }
 
     float getFontSize() const
     {
@@ -578,7 +674,7 @@ public:
 
         const float32 base_size = (float32)m_header->FontSize;
         const float32 scale = m_size / base_size;
-        vec2 base = pos - vec2(0.0f, m_size);
+        vec2 base = pos;
         for(size_t i=0; i<len; ++i) {
             uint32 di = m_header->IndexTbl[text[i]];
             float advance = (text[i] <= 0xff ? base_size*0.5f : base_size) * scale * m_spacing;
@@ -590,9 +686,9 @@ public:
                 vec2 scaled_offset = vec2(float32(cdata.Offset) * scale, 0.0f);
                 vec2 uv_pos = uv*m_rcp_tex_size;
                 vec2 uv_size = wh * m_rcp_tex_size;
-                FontQuad q = {base+scaled_offset, scaled_wh, uv_pos, uv_size};
+                FontQuad q = {base+scaled_offset, scaled_wh, uv_pos, uv_size, m_color};
                 quads.push_back(q);
-                if(!m_monospace) { advance = scaled_wh.x * m_spacing; }
+                if(!m_monospace) { advance = (scaled_wh.x + scaled_offset.x) * m_spacing; }
             }
             base.x += advance;
         }
@@ -605,6 +701,7 @@ private:
     vec2 m_tex_size;
     vec2 m_rcp_tex_size;
 
+    vec4 m_color;
     float32 m_size;
     float32 m_spacing;
     bool m_monospace;
@@ -616,19 +713,21 @@ const char *g_font_vssrc = "\
 struct RenderStates\
 {\
     mat4 ViewProjectionMatrix;\
-    vec4 Color;\
 };\
 layout(std140) uniform render_states\
 {\
     RenderStates u_RS;\
 };\
 layout(location=0) in vec2 ia_VertexPosition;\
-layout(location=1) in vec2 ia_VertexTexcoord0;\
+layout(location=1) in vec2 ia_VertexTexcoord;\
+layout(location=2) in vec4 ia_VertexColor;\
 out vec2 vs_Texcoord;\
+out vec4 vs_Color;\
 \
 void main(void)\
 {\
-    vs_Texcoord = ia_VertexTexcoord0;\
+    vs_Texcoord = ia_VertexTexcoord;\
+    vs_Color    = ia_VertexColor;\
     gl_Position = u_RS.ViewProjectionMatrix * vec4(ia_VertexPosition, 0.0, 1.0);\
 }\
 ";
@@ -638,20 +737,20 @@ const char *g_font_pssrc = "\
 struct RenderStates\
 {\
     mat4 ViewProjectionMatrix;\
-    vec4 Color;\
 };\
 layout(std140) uniform render_states\
 {\
     RenderStates u_RS;\
 };\
-uniform sampler2D u_ColorBuffer;\
+uniform sampler2D u_Font;\
 in vec2 vs_Texcoord;\
+in vec4 vs_Color;\
 layout(location=0) out vec4 ps_FragColor;\
 \
 void main()\
 {\
-    vec4 color = u_RS.Color;\
-    color.a = texture(u_ColorBuffer, vs_Texcoord).a;\
+    vec4 color = vs_Color;\
+    color.a *= texture(u_Font, vs_Texcoord).r;\
     ps_FragColor = vec4(color);\
 }\
 ";
@@ -664,14 +763,14 @@ public:
     {
         vec2 pos;
         vec2 texcoord;
+        vec4 color;
 
         VertexT() {}
-        VertexT(const vec2 &p, const vec2 &t) : pos(p), texcoord(t) {}
+        VertexT(const vec2 &p, const vec2 &t, const vec4 &c) : pos(p), texcoord(t), color(c) {}
     };
     struct RenderState
     {
         mat4 matrix;
-        vec4 color;
     };
 
     static const size_t MaxCharsPerDraw = 1024;
@@ -702,16 +801,11 @@ public:
     bool initialize(IBinaryStream &fss_stream, IBinaryStream &img_stream)
     {
         {
-            Image img;
-            if(!img.load(img_stream)) {
-                return false;
-            }
-            // alpha だけ抽出
-            Image alpha;
-            alpha.resize<R_8U>(img.width(), img.height());
-            stl::transform(img.begin<RGBA_8U>(), img.end<RGBA_8U>(), alpha.begin<R_8U>(), [&](const RGBA_8U &src){ return R_8U(src.a); });
-            Texture2DDesc desc(GL_R8, uvec2(alpha.width(), alpha.height()), 0, alpha.data());
-            m_texture = new Texture2D(desc);
+            Image img, alpha;
+            if(!img.load(img_stream)) { return false; }
+            // alpha だけ抽出。RGBA ではない画像であれば red だけ抽出
+            if(!ExtractAlpha(img, alpha)) { ExtractRed(img, alpha); }
+            m_texture = CreateTexture2DFromImage(alpha);
         }
         if(!m_fss.load(fss_stream)) {
             return false;
@@ -723,8 +817,9 @@ public:
         {
             m_va = new VertexArray();
             const VertexDesc descs[] = {
-                {0, GL_FLOAT, 2, 0, false, 0},
-                {1, GL_FLOAT, 2, 8, false, 0},
+                {0, GL_FLOAT, 2,  0, false, 0},
+                {1, GL_FLOAT, 2,  8, false, 0},
+                {2, GL_FLOAT, 4, 16, false, 0},
             };
             m_va->setAttributes(*m_vbo, sizeof(VertexT), descs, _countof(descs));
         }
@@ -732,7 +827,6 @@ public:
         m_ps = CreatePixelShaderFromString(g_font_pssrc);
         m_shader = new ShaderProgram(ShaderProgramDesc(m_vs, m_ps));
 
-        m_renderstate.color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
         return true;
     }
 
@@ -742,9 +836,9 @@ public:
     {
         m_renderstate.matrix = glm::ortho(left, right, bottom, top);
     }
-    virtual void setColor(float r, float g, float b, float a)   { m_renderstate.color=vec4(r,g,b,a); }
+    virtual void setColor(float r, float g, float b, float a)   { m_fss.setColor(vec4(r,g,b,a)); }
     virtual void setSize(float32 v)         { m_fss.setSize(v); }
-    virtual void setSpace(float32 v)        { m_fss.setSpace(v); }
+    virtual void setSpacing(float32 v)        { m_fss.setSpace(v); }
     virtual void setMonospace(bool v)       { m_fss.setMonospace(v); }
 
     virtual void addText(float x, float y, const char *text, size_t len)
@@ -761,6 +855,7 @@ public:
 
     virtual void addText(float x, float y, const wchar_t *text, size_t len)
     {
+        if(len==0) { len=wcslen(text); }
         m_fss.makeQuads(vec2(x,y), text, len, m_quads);
     }
 
@@ -779,10 +874,10 @@ public:
                 const vec2 pos_max = quad.pos + quad.size;
                 const vec2 tex_min = quad.uv_pos;
                 const vec2 tex_max = quad.uv_pos + quad.uv_size;
-                v[0] = VertexT(vec2(pos_min.x, pos_min.y), vec2(tex_min.x, tex_min.y));
-                v[1] = VertexT(vec2(pos_min.x, pos_max.y), vec2(tex_min.x, tex_max.y));
-                v[2] = VertexT(vec2(pos_max.x, pos_max.y), vec2(tex_max.x, tex_max.y));
-                v[3] = VertexT(vec2(pos_max.x, pos_min.y), vec2(tex_max.x, tex_min.y));
+                v[0] = VertexT(vec2(pos_min.x, pos_min.y), vec2(tex_min.x, tex_min.y), quad.color);
+                v[1] = VertexT(vec2(pos_min.x, pos_max.y), vec2(tex_min.x, tex_max.y), quad.color);
+                v[2] = VertexT(vec2(pos_max.x, pos_max.y), vec2(tex_max.x, tex_max.y), quad.color);
+                v[3] = VertexT(vec2(pos_max.x, pos_min.y), vec2(tex_max.x, tex_min.y), quad.color);
             }
             m_vbo->unmap();
         }

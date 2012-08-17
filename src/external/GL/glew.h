@@ -16088,7 +16088,7 @@ GLEWAPI GLboolean glewContextIsSupported (const GLEWContext* ctx, const char* na
 // そのままだと static link 版で glewInit() のリンクが通らない。
 // WINAPI (_stdcall) で実装されてるのが原因の様子。
 // GLEW_STATIC が define されてたら _stdcall 指定するようにします。
-#ifdef GLEW_STATIC
+#if defined(GLEW_STATIC) && defined(_WIN32)
 #   define GLEWINIT_CALL WINAPI
 #else // GLEW_STATIC
 #   define GLEWINIT_CALL
