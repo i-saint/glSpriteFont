@@ -5,7 +5,8 @@ OpenGL でスプライトフォント描画を実現するものです。
 (Cattleya フォルダ以下にそのツールがあります)
 
 使い方は CreateGLSpriteFont() に Cattleya で作成したフォントテクスチャ画像と sff のパスを渡し、
-glIFontRenderer::addText() で文字を追加、glIFontRenderer::flush() で描画します。
+glIFontRenderer::setScreen() でスクリーン領域を指定、glIFontRenderer::addText() で文字を追加、
+glIFontRenderer::flush() で描画します。
 (描画コールが発行されるのは glIFontRenderer::flush() の中です)
 詳しくは src/test や glSpriteFont.cpp を参照。
 
