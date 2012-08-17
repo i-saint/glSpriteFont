@@ -10,7 +10,7 @@ class glIFR_InterModule glIFontRenderer
 protected:
     virtual ~glIFontRenderer() {}
 public:
-    virtual void release()=0;
+    virtual void release()=0;   // 削除はこれで行います
     virtual void setScreen(float left, float right, float bottom, float top)=0;
     virtual void setColor(float r, float g, float b, float a)=0;
     virtual void setSize(float size)=0;
