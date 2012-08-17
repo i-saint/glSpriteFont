@@ -8,7 +8,7 @@
 class glIFR_InterModule glIFontRenderer
 {
 protected:
-    virtual ~glIFontRenderer()=0;
+    virtual ~glIFontRenderer() {}
 public:
     virtual void release()=0;
     virtual void setScreen(float left, float right, float bottom, float top)=0;
@@ -22,6 +22,6 @@ public:
     virtual void flush()=0;
 };
 
-glIFR_InterModule glIFontRenderer* CreateSpriteFont(const char *path_to_sff, const char *path_to_image);
+glIFR_InterModule glIFontRenderer* CreateGLSpriteFont(const char *path_to_sff, const char *path_to_image);
 
 #endif // __glSpriteFont_h__

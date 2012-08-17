@@ -838,19 +838,22 @@ public:
     }
     virtual void setColor(float r, float g, float b, float a)   { m_fss.setColor(vec4(r,g,b,a)); }
     virtual void setSize(float32 v)         { m_fss.setSize(v); }
-    virtual void setSpacing(float32 v)        { m_fss.setSpace(v); }
+    virtual void setSpacing(float32 v)      { m_fss.setSpace(v); }
     virtual void setMonospace(bool v)       { m_fss.setMonospace(v); }
 
     virtual void addText(float x, float y, const char *text, size_t len)
     {
-        //size_t wlen = mbstowcs(NULL, text, 0);
-        //if(wlen==size_t(-1)) { return; }
-        //wchar_t *wtext = (wchar_t*)istRawAlloca(sizeof(wchar_t)*wlen);
-        // ↑なんか _alloca() はマルチスレッド非対応っぽい雰囲気。しょうがないので固定サイズで…。
-        wchar_t wtext[1024];
-        size_t wlen = mbstowcs(wtext, text, _countof(wtext));
+        // _alloca() で一時領域高速に取りたいところだが、_alloca() はマルチスレッド非対応っぽいので素直な実装で
+        if(len==0) { len = strlen(text); }
+        stl::string tmp(text, len);
+
+        size_t wlen = mbstowcs(NULL, tmp.c_str(), 0);
         if(wlen==size_t(-1)) { return; }
-        addText(x,y, wtext, wlen);
+
+        stl::wstring wtext;
+        wtext.resize(wlen);
+        mbstowcs(&wtext[0], tmp.c_str(), wlen);
+        addText(x,y, wtext.c_str(), wlen);
     }
 
     virtual void addText(float x, float y, const wchar_t *text, size_t len)
@@ -908,13 +911,13 @@ private:
 };
 } // namespace ist
 
-glIFontRenderer::~glIFontRenderer() {}
 
-glIFontRenderer* CreateSpriteFont(ist::IBinaryStream &sff, ist::IBinaryStream &img)
+glIFontRenderer* CreateGLSpriteFont(ist::IBinaryStream &sff, ist::IBinaryStream &img)
 {
     static bool s_glew_initialized = false;
     if(!s_glew_initialized) {
         glewInit();
+        ::setlocale(LC_ALL, ""); // mbstowcs() のため
     }
 
     ist::SpriteFontRenderer *r = new ist::SpriteFontRenderer();
@@ -925,11 +928,11 @@ glIFontRenderer* CreateSpriteFont(ist::IBinaryStream &sff, ist::IBinaryStream &i
     return r;
 }
 
-glIFontRenderer* CreateSpriteFont(const char *path_to_sff, const char *path_to_img)
+glIFontRenderer* CreateGLSpriteFont(const char *path_to_sff, const char *path_to_img)
 {
     ist::FileStream sff(path_to_sff, "rb");
     ist::FileStream img(path_to_img, "rb");
     if(!sff.isOpened()) { istPrint("%s load failed\n", path_to_sff); return NULL; }
     if(!img.isOpened()) { istPrint("%s load failed\n", path_to_img); return NULL; }
-    return CreateSpriteFont(sff, img);
+    return CreateGLSpriteFont(sff, img);
 }

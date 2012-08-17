@@ -7,6 +7,9 @@
 
 #include "targetver.h"
 
+#pragma warning(disable: 4819) // コードページ問題
+#pragma warning(disable: 4996) // _s じゃない CRT 使うと出るやつ
+
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN             // Windows ヘッダーから使用されていない部分を除外します。
 // Windows ヘッダー ファイル:

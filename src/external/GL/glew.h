@@ -16089,12 +16089,12 @@ GLEWAPI GLboolean glewContextIsSupported (const GLEWContext* ctx, const char* na
 // WINAPI (_stdcall) で実装されてるのが原因の様子。
 // GLEW_STATIC が define されてたら _stdcall 指定するようにします。
 #if defined(GLEW_STATIC) && defined(_WIN32)
-#   define GLEWINIT_CALL WINAPI
+#   define GLEWCALL WINAPI
 #else // GLEW_STATIC
-#   define GLEWINIT_CALL
+#   define GLEWCALL
 #endif // GLEW_STATIC
 
-GLEWAPI GLenum WINAPI glewInit ();
+GLEWAPI GLenum GLEWCALL glewInit ();
 GLEWAPI GLboolean glewIsSupported (const char* name);
 #define glewIsExtensionSupported(x) glewIsSupported(x)
 
