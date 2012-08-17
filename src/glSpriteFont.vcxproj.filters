@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="glSpriteFont.h" />
+    <ClInclude Include="Image.h" />
+    <ClInclude Include="BinaryStream.h" />
+    <ClInclude Include="Misc.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="glSpriteFont.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="Image.cpp" />
+    <ClCompile Include="BinaryStream.cpp" />
+  </ItemGroup>
+</Project>
